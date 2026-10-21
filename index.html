@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ฟอร์มเขียน Prompt แผนที่แหล่งเรียนรู้</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&family=Sarabun:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=K2D:wght@500;700&family=Sarabun:wght@400;600&display=swap">
 <style>
 /* Layout: single working column; form cards on top, generated prompt panel below. Rice-field green + Lanna gold. */
 :root{
-  --bg:#f3f6ee; --surface:#ffffff; --fg:#22301f; --muted:#5f6d58; --line:#d6dfcb;
+  --bg:#e6f2f7; --surface:#ffffff; --sky1:#0e7c86; --sky2:#1fa98b; --sky3:#f2b134; --hero-fg:#ffffff; --fg:#22301f; --muted:#5f6d58; --line:#cfe1e6;
   --accent:#2f7a3c; --accent-fg:#ffffff; --gold:#b8860b; --gold-soft:#fbf3dc; --code-bg:#1f2a1c; --code-fg:#e9f2df;
-  --display:"Mitr",system-ui,sans-serif; --body:"Sarabun",system-ui,sans-serif;
+  --display:"K2D",system-ui,sans-serif; --body:"Sarabun",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#141a12; --surface:#1d251a; --fg:#e4ecdb; --muted:#a3b097; --line:#33402d;
+  --bg:#0f1a20; --surface:#17252c; --sky1:#0b4a52; --sky2:#156b5b; --sky3:#9a6a12; --hero-fg:#ffffff; --fg:#e4ecdb; --muted:#a3b097; --line:#2a3d45;
   --accent:#6cc27a; --accent-fg:#10200f; --gold:#e0b44a; --gold-soft:#2b2615; --code-bg:#0d120b; --code-fg:#e4ecdb; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#141a12; --surface:#1d251a; --fg:#e4ecdb; --muted:#a3b097; --line:#33402d;
+  --bg:#0f1a20; --surface:#17252c; --sky1:#0b4a52; --sky2:#156b5b; --sky3:#9a6a12; --hero-fg:#ffffff; --fg:#e4ecdb; --muted:#a3b097; --line:#2a3d45;
   --accent:#6cc27a; --accent-fg:#10200f; --gold:#e0b44a; --gold-soft:#2b2615; --code-bg:#0d120b; --code-fg:#e4ecdb; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -65,25 +65,61 @@ button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(
 pre{background:var(--code-bg);color:var(--code-fg);font-family:var(--body);font-size:.95rem;line-height:1.65;padding:16px;border-radius:10px;white-space:pre-wrap;word-break:break-word;margin:0;max-height:520px;overflow:auto}
 .out-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .toast{color:var(--accent);font-weight:600;font-size:.9rem}
-.hint{background:var(--gold-soft);border-radius:10px;padding:12px 14px;font-size:.92rem}
+.hint{border:1px solid color-mix(in srgb,var(--gold) 30%,transparent);background:var(--gold-soft);border-radius:10px;padding:12px 14px;font-size:.92rem}
 .hint ol{margin:4px 0 0;padding-left:20px}
 .count{color:var(--muted);font-size:.9rem}
+.scene{display:flex;flex-direction:column;gap:8px}
+.scene-top label{max-width:420px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chips-lbl{font-size:.85rem;color:var(--muted)}
+.addchip{padding:3px 10px;border-radius:999px;font-size:.85rem;background:var(--bg);border:1px solid var(--line)}
+.addchip:hover{border-color:var(--accent);color:var(--accent)}
+.hero{position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(120deg,var(--sky1),var(--sky2) 55%,var(--sky3));min-height:200px;display:flex;align-items:center;box-shadow:0 10px 30px -14px rgba(10,60,70,.55)}
+.hero::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-40%;width:35%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.38),transparent);transform:skewX(-18deg);animation:sweep 5s ease-in-out infinite alternate;pointer-events:none}
+@keyframes sweep{from{left:-40%}to{left:110%}}
+@media (prefers-reduced-motion:reduce){.hero::after{animation:none;display:none}}
+.hero-art{position:absolute;inset:0;width:100%;height:100%}
+.hero-text{position:relative;z-index:1;padding:28px 24px;display:flex;flex-direction:column;gap:8px;max-width:560px}
+.hero h1{color:var(--hero-fg);font-weight:700;font-size:clamp(1.6rem,4.5vw,2.3rem);text-shadow:0 2px 10px rgba(0,0,0,.18)}
+.hero .lead{color:var(--hero-fg);opacity:.92;margin:0}
+@media (max-width:560px){.hero-art{opacity:.45}}
+.card h2{color:var(--accent)}
+.credit{text-align:center;color:var(--muted);font-size:.95rem;line-height:1.7;padding-top:8px;border-top:1px solid var(--line)}
+.credit strong{font-family:var(--display);font-weight:500;color:var(--fg);font-size:1.05rem}
+
 </style>
 
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>ฟอร์มเขียน Prompt แผนที่แหล่งเรียนรู้</h1>
-    <p class="lead">กรอกชื่อพื้นที่และสถานที่ เลือกประเภทและสไตล์ภาพ แล้วกดคัดลอก Prompt ไปวางใน ChatGPT หรือ Gemini ได้ทันที บรรยายลักษณะสถานที่เป็นภาษาไทยได้เลย</p>
+<form class="wrap" autocomplete="off" onsubmit="return false">
+  <header class="hero">
+    <svg class="hero-art" viewBox="0 0 800 240" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <g fill="none" stroke="#fff" stroke-width="1.4" opacity=".22">
+        <path d="M420 240 C470 170 560 150 640 170 S780 200 820 150"/>
+        <path d="M450 240 C500 190 570 175 640 190 S770 215 820 180"/>
+        <path d="M380 240 C430 140 540 115 640 140 S790 170 820 115"/>
+        <path d="M340 240 C390 110 520 75 640 105 S800 135 820 80"/>
+        <path d="M300 240 C350 80 500 35 640 70 S810 100 820 40"/>
+        <ellipse cx="690" cy="70" rx="46" ry="26"/><ellipse cx="690" cy="70" rx="26" ry="14"/>
+      </g>
+      <path d="M470 205 C540 200 520 130 600 125 S690 175 740 95" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12" opacity=".9"/>
+      <g transform="translate(470 205)"><circle r="9" fill="#ffd166"/><circle r="3.5" fill="#7a3b0c"/></g>
+      <g transform="translate(600 125)"><path d="M0 0 C-14 -16 -12 -34 0 -34 C12 -34 14 -16 0 0Z" fill="#ff6b6b"/><circle cy="-23" r="5" fill="#fff"/></g>
+      <g transform="translate(740 95)"><path d="M0 0 C-16 -18 -14 -40 0 -40 C14 -40 16 -18 0 0Z" fill="#ffd166"/><path d="M-6 -24 L0 -34 L6 -24Z" fill="#7a3b0c"/></g>
+      <circle cx="540" cy="60" r="5" fill="#fff" opacity=".6"/><circle cx="770" cy="200" r="4" fill="#fff" opacity=".5"/><circle cx="410" cy="40" r="3" fill="#fff" opacity=".5"/>
+    </svg>
+    <div class="hero-text">
+      <h1>ฟอร์มเขียน Prompt แผนที่แหล่งเรียนรู้</h1>
+      <p class="lead">กรอกชื่อพื้นที่และสถานที่ เลือกประเภทและสไตล์ภาพ แล้วกดคัดลอก Prompt ไปวางใน ChatGPT หรือ Gemini ได้ทันที บรรยายลักษณะสถานที่เป็นภาษาไทยได้เลย</p>
+    </div>
   </header>
 
   <section class="card">
     <h2>1. ข้อมูลพื้นที่</h2>
     <div class="grid">
-      <label for="tambon">ตำบล<input id="tambon" value="เวียง"></label>
-      <label for="amphoe">อำเภอ<input id="amphoe" value="เทิง"></label>
-      <label for="province">จังหวัด<input id="province" value="เชียงราย"></label>
+      <label for="tambon">ตำบล<input id="tambon" placeholder="เช่น เวียง"></label>
+      <label for="amphoe">อำเภอ<input id="amphoe" placeholder="เช่น เทิง"></label>
+      <label for="province">จังหวัด<input id="province" placeholder="เช่น เชียงราย"></label>
       <label for="region">ภาค
         <select id="region">
           <option value="ภาคเหนือ" selected>ภาคเหนือ</option>
@@ -115,9 +151,33 @@ pre{background:var(--code-bg);color:var(--code-fg);font-family:var(--body);font-
           </optgroup>
         </select>
       </label>
-      <label for="scenery">ฉากหลัง
-        <input id="scenery" value="ทุ่งนาสีเขียว ลำธาร ต้นไม้ ภูเขาและเนินเขา ท้องฟ้าสีฟ้ามีเมฆขาว">
-      </label>
+    </div>
+    <div class="scene">
+      <div class="scene-top">
+        <label for="scenePreset">ฉากหลัง <small>(เลือกแบบสำเร็จ แล้วแก้ไขหรือพิมพ์เพิ่มได้)</small>
+          <select id="scenePreset">
+          <option value="">— เลือกแบบฉากหลัง —</option>
+          <option value="ทุ่งนาสีเขียว ลำธารใส ต้นไม้ ภูเขาและเนินเขาซ้อนกัน ท้องฟ้าสีฟ้ามีเมฆขาว">ชนบทภาคเหนือ</option>
+          <option value="ทุ่งนาข้าวสีทองพร้อมเก็บเกี่ยว กองฟาง ภูเขาไกล ๆ ท้องฟ้าแจ่มใส">ทุ่งนาสีทอง (ฤดูเก็บเกี่ยว)</option>
+          <option value="ภูเขาสูงสลับซับซ้อน มีสายหมอกลอยเหนือหุบเขา ป่าเขียวขจี แสงแดดยามเช้า">ภูเขาและสายหมอก</option>
+          <option value="แม่น้ำสายใหญ่คดเคี้ยวผ่านกลางชุมชน สะพานไม้ เรือเล็ก ต้นไม้ริมน้ำ">แม่น้ำและสะพาน</option>
+          <option value="ไร่ชาเป็นขั้นบันไดบนดอย ม่านหมอกบาง ๆ ภูเขาสีเขียวเข้ม">ไร่ชาบนดอย</option>
+          <option value="ป่าไม้เขียวชอุ่ม น้ำตกเล็ก ๆ ลำธารไหลผ่านโขดหิน ดอกไม้ป่า">ป่าและน้ำตก</option>
+          <option value="ชายหาดทรายขาว ทะเลสีฟ้าใส ต้นมะพร้าว เรือประมง เกาะเล็ก ๆ ไกล ๆ">ทะเลและชายหาด</option>
+          <option value="ถนนในตัวเมืองเล็ก ร้านค้า บ้านเรือน ต้นไม้ริมทาง ภูเขาอยู่ไกล ๆ">ชุมชนเมืองเล็ก</option>
+          <option value="ท้องฟ้ายามเย็นสีส้มทอง พระอาทิตย์กำลังตกหลังภูเขา แสงอบอุ่น">พระอาทิตย์ตก</option>
+          <option value="ดอกบัวตองและดอกไม้สีชมพูบานเต็มเนินเขา อากาศเย็นสดชื่น ท้องฟ้าใส">ฤดูหนาว ดอกไม้บาน</option>
+          <option value="ทุ่งนาเขียวชุ่มฉ่ำ มีสายรุ้งบนท้องฟ้า เมฆฝนบาง ๆ แอ่งน้ำสะท้อนแสง">ฤดูฝน</option>
+          <option value="บรรยากาศยามค่ำคืน โคมไฟล้านนาสีส้มส่องสว่าง ท้องฟ้ามีดาว พระจันทร์เต็มดวง">กลางคืน โคมไฟล้านนา</option>
+          <option value="__custom">พิมพ์เอง (ล้างช่อง)</option>
+          </select>
+        </label>
+      </div>
+      <textarea id="scenery" rows="2" placeholder="เลือกแบบด้านบน หรือพิมพ์เอง เช่น ทุ่งนาสีเขียว ลำธาร ภูเขา ท้องฟ้าสีฟ้า"></textarea>
+      <div class="chips" data-for="scenery" role="group" aria-label="เพิ่มองค์ประกอบฉากหลัง">
+        <span class="chips-lbl">เพิ่มด่วน:</span>
+        <button type="button" class="addchip" data-add="ภูเขา">+ ภูเขา</button><button type="button" class="addchip" data-add="ทุ่งนา">+ ทุ่งนา</button><button type="button" class="addchip" data-add="แม่น้ำ">+ แม่น้ำ</button><button type="button" class="addchip" data-add="ลำธาร">+ ลำธาร</button><button type="button" class="addchip" data-add="ป่าไม้">+ ป่าไม้</button><button type="button" class="addchip" data-add="สายหมอก">+ สายหมอก</button><button type="button" class="addchip" data-add="สายรุ้ง">+ สายรุ้ง</button><button type="button" class="addchip" data-add="ดวงอาทิตย์">+ ดวงอาทิตย์</button><button type="button" class="addchip" data-add="เมฆขาว">+ เมฆขาว</button><button type="button" class="addchip" data-add="บอลลูน">+ บอลลูน</button><button type="button" class="addchip" data-add="นกบิน">+ นกบิน</button><button type="button" class="addchip" data-add="ดอกไม้">+ ดอกไม้</button><button type="button" class="addchip" data-add="ต้นมะพร้าว">+ ต้นมะพร้าว</button><button type="button" class="addchip" data-add="โคมล้านนา">+ โคมล้านนา</button><button type="button" class="addchip" data-add="ตุงล้านนา">+ ตุงล้านนา</button>
+      </div>
     </div>
   </section>
 
@@ -134,7 +194,27 @@ pre{background:var(--code-bg);color:var(--code-fg);font-family:var(--body);font-
   <section class="card">
     <h2>3. ตัวเลือกเพิ่มเติม</h2>
     <div class="grid">
-      <label for="extras">สิ่งประกอบในภาพ<input id="extras" value="ชาวบ้าน เด็กปั่นจักรยาน รถสองแถว และรถบัสบนถนน"></label>
+      <div class="scene" style="grid-column:1/-1">
+        <label for="extrasPreset" style="max-width:420px">สิ่งประกอบในภาพ <small>(เลือกแบบสำเร็จ แล้วแก้ไขหรือพิมพ์เพิ่มได้)</small>
+          <select id="extrasPreset">
+          <option value="">— เลือกสิ่งประกอบ —</option>
+          <option value="ชาวบ้านเดินไปมา เด็ก ๆ ปั่นจักรยาน ผู้สูงอายุนั่งคุยกัน">ผู้คนในชุมชน</option>
+          <option value="รถสองแถว รถตู้นำเที่ยว รถบัส และมอเตอร์ไซค์บนถนน">การเดินทาง</option>
+          <option value="นักเรียนในชุดนักเรียนเดินเป็นแถวกับครู รถบัสโรงเรียน">นักเรียนทัศนศึกษา</option>
+          <option value="นักท่องเที่ยวสะพายกระเป๋า ถ่ายรูป ถือแผนที่">นักท่องเที่ยว</option>
+          <option value="วัว ควาย ไก่ เป็ด สุนัข และแมวตามจุดต่าง ๆ">สัตว์เลี้ยงและสัตว์ในฟาร์ม</option>
+          <option value="ชาวบ้านแต่งชุดพื้นเมืองล้านนา ตุงหลากสี โคมไฟล้านนา">วิถีชีวิตล้านนา</option>
+          <option value="ขบวนแห่ประเพณี ฟ้อนรำ กลองสะบัดชัย ธงและตุงประดับ">งานประเพณี</option>
+          <option value="บอลลูนลอยบนฟ้า คนปั่นจักรยานเสือภูเขา เต็นท์แคมป์ปิ้ง">ท่องเที่ยวผจญภัย</option>
+          <option value="__custom">พิมพ์เอง (ล้างช่อง)</option>
+          </select>
+        </label>
+        <textarea id="extras" rows="2" placeholder="เลือกแบบด้านบน หรือพิมพ์เอง เช่น ชาวบ้าน เด็กปั่นจักรยาน รถสองแถว"></textarea>
+        <div class="chips" data-for="extras" role="group" aria-label="เพิ่มสิ่งประกอบในภาพ">
+          <span class="chips-lbl">เพิ่มด่วน:</span>
+          <button type="button" class="addchip" data-add="ชาวบ้าน">+ ชาวบ้าน</button><button type="button" class="addchip" data-add="เด็กปั่นจักรยาน">+ เด็กปั่นจักรยาน</button><button type="button" class="addchip" data-add="พระสงฆ์">+ พระสงฆ์</button><button type="button" class="addchip" data-add="รถสองแถว">+ รถสองแถว</button><button type="button" class="addchip" data-add="รถบัส">+ รถบัส</button><button type="button" class="addchip" data-add="มอเตอร์ไซค์">+ มอเตอร์ไซค์</button><button type="button" class="addchip" data-add="รถอีแต๋น">+ รถอีแต๋น</button><button type="button" class="addchip" data-add="ควาย">+ ควาย</button><button type="button" class="addchip" data-add="วัว">+ วัว</button><button type="button" class="addchip" data-add="ไก่">+ ไก่</button><button type="button" class="addchip" data-add="สุนัข">+ สุนัข</button><button type="button" class="addchip" data-add="นก">+ นก</button><button type="button" class="addchip" data-add="ผีเสื้อ">+ ผีเสื้อ</button><button type="button" class="addchip" data-add="บอลลูน">+ บอลลูน</button><button type="button" class="addchip" data-add="ป้ายบอกทาง">+ ป้ายบอกทาง</button><button type="button" class="addchip" data-add="ลูกศรนำทาง">+ ลูกศรนำทาง</button>
+        </div>
+      </div>
       <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:6px">
         <span style="font-weight:600;font-size:.92rem">ภาพแผนที่จริง <small style="font-weight:400;color:var(--muted)">(แคปจาก Google Maps หรือภาพร่างวาดมือ เพื่อให้ AI วางตำแหน่งตาม)</small></span>
         <div class="photo-row" id="maprow"></div>
@@ -182,7 +262,7 @@ pre{background:var(--code-bg);color:var(--code-fg);font-family:var(--body);font-
       <h2>ข้อความป้ายภาษาไทย (สำหรับ Canva)</h2>
       <div class="actions"><span class="toast" id="t2" hidden>คัดลอกแล้ว</span><button type="button" id="copy2">คัดลอกข้อความ</button></div>
     </div>
-    <label for="titleTh">หัวเรื่องโปสเตอร์<input id="titleTh" value="แผนที่เส้นทางแหล่งเรียนรู้ ตำบลเวียง อำเภอเทิง จังหวัดเชียงราย"></label>
+    <label for="titleTh">หัวเรื่องโปสเตอร์<input id="titleTh" placeholder="เช่น แผนที่เส้นทางแหล่งเรียนรู้ ตำบลเวียง อำเภอเทิง จังหวัดเชียงราย"></label>
     <pre id="labels"></pre>
   </section>
 
@@ -195,7 +275,12 @@ pre{background:var(--code-bg);color:var(--code-fg);font-family:var(--body);font-
       <li>นำภาพไป Canva ใส่หัวเรื่อง ป้ายชื่อ และ QR Code (ลิงก์ Google Maps)</li>
     </ol>
   </div>
-</div>
+
+  <footer class="credit">
+    สร้างสรรค์โดย <strong>นายวนศาสตร์ วัฒนาสกุลลี</strong><br>
+    ครู สกร.ระดับอำเภอเทิง
+  </footer>
+</form>
 
 <script>
 const TYPES = {
@@ -225,12 +310,7 @@ const TYPES = {
 };
 const GRID = ["มุมซ้ายบน","ด้านบนตรงกลาง","มุมขวาบน","ด้านซ้ายตรงกลาง","ตรงกลางภาพ","ด้านขวาตรงกลาง","มุมซ้ายล่าง","ด้านล่างตรงกลาง","มุมขวาล่าง"];
 const SHORT = ["ซ้ายบน","บน","ขวาบน","ซ้าย","กลาง","ขวา","ซ้ายล่าง","ล่าง","ขวาล่าง"];
-let places = [
-  {th:"วัดพระธาตุจอมจ้อ",type:"hilltemple",d:TYPES.hilltemple.d,img:null,pos:1},
-  {th:"แหล่งเรียนรู้บ่อเลี้ยงกุ้ง",type:"shrimp",d:TYPES.shrimp.d,img:null,pos:3},
-  {th:"แหล่งเรียนรู้การทำกระเป๋าจากต้นกก",type:"sedge",d:TYPES.sedge.d,img:null,pos:5},
-  {th:"ห้องสมุดประชาชนอำเภอเทิง",type:"library",d:TYPES.library.d,img:null,pos:7}
-];
+let places = [{th:"",type:"other",d:"",img:null}];
 const $ = id => document.getElementById(id);
 const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -251,13 +331,13 @@ function renderPlaces(){
     <div class="place">
       <div class="place-head">
         <span class="num">${i+1}</span>
-        <input id="th${i}" data-i="${i}" data-f="th" placeholder="ชื่อสถานที่" value="${esc(p.th)}" aria-label="ชื่อสถานที่ ${i+1}">
+        <input id="th${i}" data-i="${i}" data-f="th" placeholder="ชื่อสถานที่ เช่น วัดพระธาตุจอมจ้อ" value="${esc(p.th)}" aria-label="ชื่อสถานที่ ${i+1}">
         <span class="move"><button type="button" data-up="${i}" aria-label="เลื่อนขึ้น" ${i===0?"disabled":""}>↑</button><button type="button" data-down="${i}" aria-label="เลื่อนลง" ${i===places.length-1?"disabled":""}>↓</button></span>
         <button type="button" class="del" data-del="${i}" aria-label="ลบสถานที่ ${i+1}">ลบ</button>
       </div>
       <div class="row2">
         <label for="type${i}">ประเภท<select id="type${i}" data-i="${i}" data-f="type">${opts}</select></label>
-        <label for="d${i}">ลักษณะในภาพ <small>(บรรยายภาษาไทยได้ แก้ไขได้)</small><textarea id="d${i}" data-i="${i}" data-f="d" placeholder="เช่น เจดีย์สีขาว มีต้นโพธิ์ใหญ่ข้าง ๆ">${esc(p.d)}</textarea></label>
+        <label for="d${i}">ลักษณะในภาพ <small>(บรรยายภาษาไทยได้ แก้ไขได้)</small><textarea id="d${i}" data-i="${i}" data-f="d" placeholder="เลือกประเภทเพื่อเติมคำบรรยายอัตโนมัติ หรือพิมพ์เอง เช่น เจดีย์สีขาว มีต้นโพธิ์ใหญ่ข้าง ๆ">${esc(p.d)}</textarea></label>
       </div>
       <div class="photo-row">
         <label class="upload" for="img${i}">📷 ${p.img?"เปลี่ยนรูปจริง":"เลือกรูปจริง (ถ้ามี)"}<input type="file" accept="image/*" id="img${i}" data-img="${i}"></label>
@@ -320,19 +400,19 @@ function build(){
 สไตล์: ${v("style")}
 ${lock?"สำคัญมาก: มุมมองจากด้านหน้า เอียงลงเล็กน้อย ห้ามหมุนแผนที่ ด้านบนของภาพคือทิศเหนือ วางตำแหน่งทุกอย่างตามที่ระบุ":"มุมมองจากมุมสูง (bird's-eye view)"} รายละเอียดสูง${$("edge").value?"\n"+$("edge").value:""}
 ${ROADS[$("road").value]}${v("roadto")?"\nปลายทางของถนน: "+v("roadto"):""}
-ฉากหลัง: ${v("scenery")}
+ฉากหลัง: ${v("scenery")||"ทุ่งนาสีเขียว ต้นไม้ ภูเขา ท้องฟ้าสีฟ้ามีเมฆขาว"}
 
 สถานที่บนแผนที่:
 ${lines}
 `;
-  if(v("extras")) txt+=`\nเพิ่ม${v("extras")} ให้ภาพมีชีวิตชีวา`;
+  if(v("extras")) txt+=`\nสิ่งประกอบในภาพ (ให้ภาพมีชีวิตชีวา): ${v("extras")}`;
   txt+=`
 ${lock?`มีทั้งหมด ${list.length} สถานที่เท่านั้น ห้ามเพิ่มอาคารหรือสถานที่อื่น\n`:""}ห้ามมีตัวอักษร ตัวเลข หรือข้อความใด ๆ ในภาพ (No text, no letters, no numbers)
 ${$("format").value}`;
   if(hasImg) txt+=`\n\nใช้รูปถ่ายที่แนบมาเป็นต้นแบบรูปทรงและสีของสถานที่ แต่วาดให้เป็นสไตล์เดียวกันทั้งภาพ`;
   if(mapImg) txt+=`\n\n${hasImg?"รูปแนบที่ "+(places.filter(p=>p.img).length+1)+" (รูปสุดท้าย)":"รูปที่แนบมา"}คือแผนที่จริงของพื้นที่ ให้วางตำแหน่งสถานที่และแนวถนนตามแผนที่นี้ทุกจุด (ไม่ต้องวาดตัวอักษรหรือหมุดจากแผนที่)`;
   $("out").textContent=txt;
-  $("labels").textContent=`หัวเรื่อง: ${v("titleTh")}\n\n`+list.map((p,i)=>`ป้ายที่ ${i+1}: ${p.th||"(ยังไม่ใส่ชื่อ)"}`).join("\n");
+  $("labels").textContent=`หัวเรื่อง: ${v("titleTh")||("แผนที่เส้นทางแหล่งเรียนรู้ "+area).trim()}\n\n`+list.map((p,i)=>`ป้ายที่ ${i+1}: ${p.th||"(ยังไม่ใส่ชื่อ)"}`).join("\n");
 }
 
 function copy(pre,toast){
@@ -343,7 +423,30 @@ function copy(pre,toast){
 }
 $("copy1").addEventListener("click",()=>copy("out","t1"));
 $("copy2").addEventListener("click",()=>copy("labels","t2"));
+const scn=$("scenery");
+$("scenePreset").addEventListener("change",e=>{
+  const v=e.target.value;
+  if(v==="__custom"){scn.value="";scn.focus();}
+  else if(v){scn.value=v;}
+  build();
+});
+scn.addEventListener("input",build);
+document.querySelectorAll(".chips").forEach(box=>box.addEventListener("click",e=>{
+  const a=e.target.dataset.add; if(!a) return;
+  const t=$(box.dataset.for), cur=t.value.trim();
+  if(cur.includes(a)) return;
+  t.value=cur?cur+" "+a:a; build();
+}));
+$("extrasPreset").addEventListener("change",e=>{
+  const v=e.target.value, t=$("extras");
+  if(v==="__custom"){t.value="";t.focus();}
+  else if(v){t.value=v;}
+  build();
+});
+$("extras").addEventListener("input",build);
+document.querySelector("form.wrap").reset();
 renderPlaces();
+window.addEventListener("pageshow",e=>{if(e.persisted){document.querySelector("form.wrap").reset();places=[{th:"",type:"other",d:"",img:null}];mapImg=null;renderPlaces();}});
 </script>
 </body>
 </html>
