@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ฟอร์มเขียน Prompt แผนที่แหล่งเรียนรู้</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&family=Sarabun:wght@400;600&display=swap">
+<style>
+/* Layout: single working column; form cards on top, generated prompt panel below. Rice-field green + Lanna gold. */
+:root{
+  --bg:#f3f6ee; --surface:#ffffff; --fg:#22301f; --muted:#5f6d58; --line:#d6dfcb;
+  --accent:#2f7a3c; --accent-fg:#ffffff; --gold:#b8860b; --gold-soft:#fbf3dc; --code-bg:#1f2a1c; --code-fg:#e9f2df;
+  --display:"Mitr",system-ui,sans-serif; --body:"Sarabun",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a12; --surface:#1d251a; --fg:#e4ecdb; --muted:#a3b097; --line:#33402d;
+  --accent:#6cc27a; --accent-fg:#10200f; --gold:#e0b44a; --gold-soft:#2b2615; --code-bg:#0d120b; --code-fg:#e4ecdb; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a12; --surface:#1d251a; --fg:#e4ecdb; --muted:#a3b097; --line:#33402d;
+  --accent:#6cc27a; --accent-fg:#10200f; --gold:#e0b44a; --gold-soft:#2b2615; --code-bg:#0d120b; --code-fg:#e4ecdb; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(1.5rem,4vw,2rem);line-height:1.3;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:500;font-size:1.2rem;margin:0}
+.lead{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:.92rem;min-width:0}
+label small{font-weight:400;color:var(--muted)}
+input,select,textarea{font:inherit;font-weight:400;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{resize:vertical;min-height:64px;font-size:.95rem}
+input:focus,select:focus,textarea:focus,button:focus-visible,.upload:focus-within{outline:2px solid var(--accent);outline-offset:1px}
+.place{border:1px dashed var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.place-head{display:flex;align-items:center;gap:10px}
+.num{font-family:var(--display);background:var(--gold-soft);color:var(--gold);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none}
+.place-head input{flex:1;min-width:0}
+.row2{display:grid;grid-template-columns:180px 1fr;gap:10px}
+.photo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.upload{display:inline-flex;flex-direction:row;align-items:center;gap:6px;font-weight:400;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;background:var(--surface)}
+.upload input{position:absolute;opacity:0;width:1px;height:1px}
+.thumb{width:64px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.photo-note{color:var(--muted);font-size:.85rem}
+.pos-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mini{display:grid;grid-template-columns:repeat(3,28px);grid-template-rows:repeat(3,22px);gap:3px;padding:4px;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+.mini button{padding:0;border-radius:4px;border:1px solid var(--line);background:var(--surface)}
+.mini button.on{background:var(--accent);border-color:var(--accent)}
+.pos-text{font-size:.9rem;color:var(--muted)}
+.pos-text b{color:var(--fg);font-weight:600}
+.move{display:flex;gap:4px}
+.move button{padding:4px 10px}
+.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 14%,var(--bg)),var(--bg));border:1px solid var(--line);border-radius:10px;padding:8px;max-width:420px}
+.cell{min-height:58px;border:1px dashed var(--line);border-radius:6px;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:4px;padding:4px;position:relative}
+.cell .lbl{position:absolute;top:2px;left:5px;font-size:.68rem;color:var(--muted)}
+.cell .num{width:24px;height:24px;font-size:.85rem}
+.ov-wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.ov-wrap p{margin:0;max-width:36ch;color:var(--muted);font-size:.9rem}
+@media (max-width:560px){.row2{grid-template-columns:1fr}}
+button{font:inherit;cursor:pointer;border-radius:8px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:600}
+.del{padding:6px 10px;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+pre{background:var(--code-bg);color:var(--code-fg);font-family:var(--body);font-size:.95rem;line-height:1.65;padding:16px;border-radius:10px;white-space:pre-wrap;word-break:break-word;margin:0;max-height:520px;overflow:auto}
+.out-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.toast{color:var(--accent);font-weight:600;font-size:.9rem}
+.hint{background:var(--gold-soft);border-radius:10px;padding:12px 14px;font-size:.92rem}
+.hint ol{margin:4px 0 0;padding-left:20px}
+.count{color:var(--muted);font-size:.9rem}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ฟอร์มเขียน Prompt แผนที่แหล่งเรียนรู้</h1>
+    <p class="lead">กรอกชื่อพื้นที่และสถานที่ เลือกประเภทและสไตล์ภาพ แล้วกดคัดลอก Prompt ไปวางใน ChatGPT หรือ Gemini ได้ทันที บรรยายลักษณะสถานที่เป็นภาษาไทยได้เลย</p>
+  </header>
+
+  <section class="card">
+    <h2>1. ข้อมูลพื้นที่</h2>
+    <div class="grid">
+      <label for="tambon">ตำบล<input id="tambon" value="เวียง"></label>
+      <label for="amphoe">อำเภอ<input id="amphoe" value="เทิง"></label>
+      <label for="province">จังหวัด<input id="province" value="เชียงราย"></label>
+      <label for="region">ภาค
+        <select id="region">
+          <option value="ภาคเหนือ" selected>ภาคเหนือ</option>
+          <option value="ภาคอีสาน">ภาคอีสาน</option>
+          <option value="ภาคกลาง">ภาคกลาง</option>
+          <option value="ภาคตะวันออก">ภาคตะวันออก</option>
+          <option value="ภาคใต้">ภาคใต้</option>
+        </select>
+      </label>
+    </div>
+    <div class="grid">
+      <label for="style">สไตล์ภาพ
+        <select id="style">
+          <optgroup label="การ์ตูน / ภาพวาด">
+            <option value="การ์ตูน 3 มิติน่ารัก สีสดใส แบบหนังสือนิทานเด็ก" selected>การ์ตูน 3D น่ารัก (แบบภาพตัวอย่าง)</option>
+            <option value="โมเดลดินปั้น 3 มิติ (clay) ผิวนุ่ม สีพาสเทล น่ารัก">ดินปั้น 3D (Clay)</option>
+            <option value="ภาพวาดมือแบบอนิเมะญี่ปุ่น สีอบอุ่น บรรยากาศชนบทอบอุ่นใจ">อนิเมะวาดมือ</option>
+            <option value="ภาพวาดสีน้ำ โทนสีพาสเทล นุ่มนวล">สีน้ำ</option>
+            <option value="ภาพเวกเตอร์แบบเรียบ (flat illustration) รูปทรงเรียบง่าย สีสด">เวกเตอร์แบบเรียบ</option>
+            <option value="ภาพกระดาษตัดซ้อนชั้น (paper cut) มีมิติ เงานุ่ม">กระดาษตัดซ้อนชั้น</option>
+            <option value="ภาพพิกเซลอาร์ตแบบเกมย้อนยุค สีสดใส">พิกเซลอาร์ต (เกมย้อนยุค)</option>
+            <option value="ภาพวาดลายไทยล้านนา ตัดเส้นสีทอง พื้นสีแดงเข้มและครีม">ลายไทยล้านนา</option>
+            <option value="แผนที่ภาพวาดแบบโบราณ กระดาษเก่า ลายเส้นปากกาและสีน้ำจาง ๆ">แผนที่โบราณ</option>
+          </optgroup>
+          <optgroup label="ภาพเหมือนจริง">
+            <option value="ภาพถ่ายเสมือนจริง (photorealistic) มุมสูงจากโดรน แสงธรรมชาติยามเช้า รายละเอียดคมชัด">ภาพจริง มุมโดรน</option>
+            <option value="ภาพ 3 มิติเสมือนจริง (realistic 3D render) แสงเงาสมจริง รายละเอียดสูง">3D เสมือนจริง</option>
+            <option value="ภาพถ่ายโมเดลจำลองขนาดเล็ก (miniature diorama / tilt-shift) เหมือนของจริงย่อส่วน">โมเดลจำลองย่อส่วน</option>
+          </optgroup>
+        </select>
+      </label>
+      <label for="scenery">ฉากหลัง
+        <input id="scenery" value="ทุ่งนาสีเขียว ลำธาร ต้นไม้ ภูเขาและเนินเขา ท้องฟ้าสีฟ้ามีเมฆขาว">
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="out-head">
+      <h2>2. สถานที่บนแผนที่</h2>
+      <span class="count" id="count"></span>
+    </div>
+    <p class="lead" style="margin:0">ปุ่ม ↑ ↓ ใช้เรียงลำดับเส้นทาง ถนนในภาพจะเชื่อมสถานที่ตามลำดับเลข</p>
+    <div id="places" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div class="actions"><button type="button" id="add">+ เพิ่มสถานที่</button></div>
+  </section>
+
+  <section class="card">
+    <h2>3. ตัวเลือกเพิ่มเติม</h2>
+    <div class="grid">
+      <label for="extras">สิ่งประกอบในภาพ<input id="extras" value="ชาวบ้าน เด็กปั่นจักรยาน รถสองแถว และรถบัสบนถนน"></label>
+      <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:6px">
+        <span style="font-weight:600;font-size:.92rem">ภาพแผนที่จริง <small style="font-weight:400;color:var(--muted)">(แคปจาก Google Maps หรือภาพร่างวาดมือ เพื่อให้ AI วางตำแหน่งตาม)</small></span>
+        <div class="photo-row" id="maprow"></div>
+      </div>
+      <label for="road">โครงถนน
+        <select id="road">
+          <option value="winding" selected>ถนนคดเคี้ยวเชื่อมทุกจุด</option>
+          <option value="cross">สี่แยก (ถนนตัดกันกลางภาพ)</option>
+          <option value="t">สามแยก (รูปตัว T)</option>
+          <option value="h">ถนนเส้นตรงแนวนอนผ่านกลางภาพ</option>
+          <option value="v">ถนนเส้นตรงแนวตั้งผ่านกลางภาพ</option>
+          <option value="ring">ถนนวงแหวนรอบแผนที่</option>
+        </select>
+      </label>
+      <label for="roadto">ปลายทางของถนน <small>(ถ้ามี)</small><input id="roadto" placeholder="เช่น ซ้ายไปเชียงคำ ขวาไปเชียงราย" value=""></label>
+      <label for="lock" style="flex-direction:row;align-items:center;gap:8px;font-weight:400;grid-column:1/-1"><input id="lock" type="checkbox" style="width:auto" checked> ล็อกทิศแผนที่ ห้าม AI หมุนแผนที่ และห้ามเพิ่มอาคารที่ไม่ได้ระบุ (ช่วยให้ตำแหน่งตรงขึ้น)</label>
+      <label for="edge">ขอบแผนที่
+        <select id="edge">
+          <option value="แผนที่เป็นเกาะลอย 3 มิติ ขอบเว้าแหว่งไม่เป็นเส้นตรง เห็นชั้นดินและหินด้านข้างเหมือนโมเดลแผนที่ 3 มิติ ไม่เต็มขอบภาพ วางบนพื้นหลังสีอ่อนเรียบ ๆ" selected>เกาะลอย 3D ขอบเว้าแหว่ง</option>
+          <option value="แผนที่ทรงกลมคล้ายจานลอย 3 มิติ ขอบโค้งเว้าแหว่ง เห็นชั้นดินด้านข้าง ไม่เต็มขอบภาพ วางบนพื้นหลังสีอ่อนเรียบ ๆ">เกาะลอยทรงกลม</option>
+          <option value="แผนที่เป็นแผ่นกระดาษขอบฉีกเว้าแหว่ง วางบนพื้นหลังสีอ่อน มีเงาใต้กระดาษ">กระดาษขอบฉีก</option>
+          <option value="">เต็มขอบภาพ</option>
+        </select>
+      </label>
+      <label for="format">ขนาดภาพ
+        <select id="format">
+          <option value="ภาพแนวตั้งแบบโปสเตอร์" selected>แนวตั้ง (โปสเตอร์)</option>
+          <option value="ภาพแนวนอน">แนวนอน</option>
+          <option value="ภาพสี่เหลี่ยมจัตุรัส">สี่เหลี่ยมจัตุรัส</option>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="out-head">
+      <h2>Prompt สำหรับสร้างภาพ</h2>
+      <div class="actions"><span class="toast" id="t1" hidden>คัดลอกแล้ว</span><button class="primary" type="button" id="copy1">คัดลอก Prompt</button></div>
+    </div>
+    <pre id="out"></pre>
+  </section>
+
+  <section class="card">
+    <div class="out-head">
+      <h2>ข้อความป้ายภาษาไทย (สำหรับ Canva)</h2>
+      <div class="actions"><span class="toast" id="t2" hidden>คัดลอกแล้ว</span><button type="button" id="copy2">คัดลอกข้อความ</button></div>
+    </div>
+    <label for="titleTh">หัวเรื่องโปสเตอร์<input id="titleTh" value="แผนที่เส้นทางแหล่งเรียนรู้ ตำบลเวียง อำเภอเทิง จังหวัดเชียงราย"></label>
+    <pre id="labels"></pre>
+  </section>
+
+  <div class="hint">
+    <strong>ขั้นตอนต่อไป</strong>
+    <ol>
+      <li>วาง Prompt ใน ChatGPT หรือ Gemini</li>
+      <li>ถ้าเลือกรูปไว้ในฟอร์ม ให้แนบรูปเดียวกันในแชต ChatGPT/Gemini ด้วย <strong>เรียงตามลำดับเลขรูป</strong> (ฟอร์มนี้ส่งรูปให้เองไม่ได้ ใช้แสดงตัวอย่างและจัดลำดับเท่านั้น)</li>
+      <li>ถ้าต้องการแก้ ให้สั่งทีละจุด เช่น “ทำให้เจดีย์ใหญ่ขึ้น”</li>
+      <li>นำภาพไป Canva ใส่หัวเรื่อง ป้ายชื่อ และ QR Code (ลิงก์ Google Maps)</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+const TYPES = {
+  temple:{th:"วัด / พระธาตุ",d:"เจดีย์สีทองแบบล้านนา วิหารสีขาวแดง มีธงตุงหลากสี และสามเณรห่มจีวรสีส้มเดินอยู่"},
+  hilltemple:{th:"วัดบนดอย",d:"เจดีย์สีทองแบบล้านนาตั้งอยู่บนยอดเนินเขาสีเขียว มีบันไดทอดยาวขึ้นไป มีวิหาร และสามเณรห่มจีวรสีส้ม"},
+  farm_animal:{th:"ฟาร์มสัตว์",d:"ฟาร์มมีโรงนาสีแดง วัว แพะ และไก่ เกษตรกรกำลังให้อาหารสัตว์"},
+  farm_veg:{th:"ฟาร์มผัก / เกษตรอินทรีย์",d:"แปลงผักอินทรีย์สีเขียวเรียงเป็นระเบียบ มีโรงเรือน และเกษตรกรกำลังเก็บผัก"},
+  orchard:{th:"สวนผลไม้",d:"สวนผลไม้ร่มรื่น มีต้นลำไย มะม่วง และลิ้นจี่ออกผลเต็มต้น ชาวสวนกำลังเก็บผลไม้ใส่ตะกร้า"},
+  teagarden:{th:"สวนชา / สวนกาแฟ",d:"สวนชาเป็นขั้นบันไดบนเนินเขาสีเขียว มีคนเก็บใบชาสวมหมวกและสะพายตะกร้า"},
+  flower:{th:"สวนดอกไม้",d:"สวนดอกไม้หลากสีบานสะพรั่ง มีทางเดินและซุ้มถ่ายรูป นักท่องเที่ยวกำลังถ่ายภาพ"},
+  herb:{th:"สวนสมุนไพร",d:"สวนสมุนไพรจัดเป็นแปลง มีป้ายไม้เล็ก ๆ ศาลาไม้ และหม้อต้มสมุนไพร"},
+  park:{th:"สวนสาธารณะ",d:"สวนสาธารณะมีสนามหญ้า สระน้ำ ม้านั่ง ทางเดิน และครอบครัวพาเด็กมาเล่น"},
+  shrimp:{th:"บ่อกุ้ง / บ่อปลา",d:"บ่อเลี้ยงกุ้งทรงสี่เหลี่ยมหลายบ่อ มีกังหันตีน้ำกำลังหมุนน้ำกระจาย กระท่อมไม้หลังเล็ก เกษตรกรถือสวิงที่มีกุ้ง และเด็ก ๆ กำลังเรียนรู้"},
+  sufficiency:{th:"ศูนย์เศรษฐกิจพอเพียง",d:"ศูนย์เรียนรู้เศรษฐกิจพอเพียง มีบ่อปลา แปลงผัก ต้นไม้ผล แผงโซลาร์เซลล์ และบ้านไม้"},
+  craft:{th:"งานหัตถกรรม / ภูมิปัญญา",d:"ศาลาไม้ที่ชาวบ้านกำลังทำงานหัตถกรรม มีชั้นวางสินค้าสีสันสวยงาม"},
+  sedge:{th:"สานกก / กระเป๋ากก",d:"ศาลาไม้ที่ผู้หญิงกำลังสานกระเป๋าจากต้นกกแห้ง มีมัดต้นกกแห้งวางอยู่ และมีกระเป๋ากกสีสันสวยงามวางโชว์บนชั้น"},
+  weaving:{th:"ทอผ้า",d:"บ้านไม้มีกี่ทอผ้า ผู้หญิงกำลังทอผ้าลายล้านนาสีสวย มีผ้าแขวนโชว์"},
+  learncenter:{th:"ศูนย์การเรียนรู้ชุมชน",d:"อาคารศูนย์การเรียนรู้ชุมชนแบบไม้ผสมปูน มีป้ายนิทรรศการ บอร์ดความรู้ วิทยากรกำลังบรรยายให้นักเรียนและชาวบ้านที่นั่งฟังอยู่ในศาลา"},
+  library:{th:"ห้องสมุด",d:"อาคารห้องสมุดทันสมัย มีหน้าต่างกระจกบานใหญ่ เห็นชั้นหนังสือด้านใน และเด็ก ๆ นั่งอ่านหนังสือบนม้านั่งในสวนหน้าห้องสมุด"},
+  school:{th:"โรงเรียน",d:"อาคารเรียนสีสดใส มีเสาธง สนามเด็กเล่น และนักเรียน"},
+  waterfall:{th:"น้ำตก",d:"น้ำตกไหลลงมาตามโขดหินสู่ลำธารใส มีเด็ก ๆ เล่นน้ำ"},
+  viewpoint:{th:"จุดชมวิว",d:"ระเบียงไม้ชมวิวบนเนินเขา นักท่องเที่ยวกำลังถ่ายรูปวิวหุบเขา"},
+  market:{th:"ตลาด / ถนนคนเดิน",d:"ถนนตลาดชุมชน มีบ้านไม้ ร้านขายอาหาร โคมไฟ และผู้คนเดินจับจ่าย"},
+  food:{th:"อาหาร / ผลิตภัณฑ์ชุมชน",d:"ร้านขายผลิตภัณฑ์ชุมชน มีขวดโหลอาหารพื้นบ้าน แม่ค้ายิ้มแย้มอยู่หลังแผง"},
+  river:{th:"แม่น้ำ / ฝาย / อ่างเก็บน้ำ",d:"ฝายกั้นน้ำมีน้ำไหลล้นลงสู่แม่น้ำ มีอาคารสูบน้ำหลังเล็กอยู่ข้าง ๆ"},
+  other:{th:"อื่น ๆ (เขียนเอง)",d:""}
+};
+const GRID = ["มุมซ้ายบน","ด้านบนตรงกลาง","มุมขวาบน","ด้านซ้ายตรงกลาง","ตรงกลางภาพ","ด้านขวาตรงกลาง","มุมซ้ายล่าง","ด้านล่างตรงกลาง","มุมขวาล่าง"];
+const SHORT = ["ซ้ายบน","บน","ขวาบน","ซ้าย","กลาง","ขวา","ซ้ายล่าง","ล่าง","ขวาล่าง"];
+let places = [
+  {th:"วัดพระธาตุจอมจ้อ",type:"hilltemple",d:TYPES.hilltemple.d,img:null,pos:1},
+  {th:"แหล่งเรียนรู้บ่อเลี้ยงกุ้ง",type:"shrimp",d:TYPES.shrimp.d,img:null,pos:3},
+  {th:"แหล่งเรียนรู้การทำกระเป๋าจากต้นกก",type:"sedge",d:TYPES.sedge.d,img:null,pos:5},
+  {th:"ห้องสมุดประชาชนอำเภอเทิง",type:"library",d:TYPES.library.d,img:null,pos:7}
+];
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function photoOrder(){ let n=0; return places.map(p=>p.img?++n:0); }
+let mapImg=null;
+function renderMap(){
+  const n=places.filter(p=>p.img).length+1;
+  $("maprow").innerHTML=`<label class="upload" for="mapfile">🗺️ ${mapImg?"เปลี่ยนภาพแผนที่":"เลือกภาพแผนที่"}<input type="file" accept="image/*" id="mapfile"></label>`+
+    (mapImg?`<img class="thumb" src="${mapImg}" alt="ภาพแผนที่จริง"><span class="photo-note">แนบเป็นรูปที่ ${n} (รูปสุดท้าย)</span><button type="button" class="del" id="maprm">ลบรูป</button>`:`<span class="photo-note">ไม่บังคับ แต่ช่วยให้ตำแหน่งตรงของจริงมากขึ้น</span>`);
+  $("mapfile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{mapImg=r.result;renderMap();build();};r.readAsDataURL(f);});
+  if(mapImg) $("maprm").addEventListener("click",()=>{mapImg=null;renderMap();build();});
+}
+
+function renderPlaces(){
+  const opts = Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v.th}</option>`).join("");
+  const order = photoOrder();
+  $("places").innerHTML = places.map((p,i)=>`
+    <div class="place">
+      <div class="place-head">
+        <span class="num">${i+1}</span>
+        <input id="th${i}" data-i="${i}" data-f="th" placeholder="ชื่อสถานที่" value="${esc(p.th)}" aria-label="ชื่อสถานที่ ${i+1}">
+        <span class="move"><button type="button" data-up="${i}" aria-label="เลื่อนขึ้น" ${i===0?"disabled":""}>↑</button><button type="button" data-down="${i}" aria-label="เลื่อนลง" ${i===places.length-1?"disabled":""}>↓</button></span>
+        <button type="button" class="del" data-del="${i}" aria-label="ลบสถานที่ ${i+1}">ลบ</button>
+      </div>
+      <div class="row2">
+        <label for="type${i}">ประเภท<select id="type${i}" data-i="${i}" data-f="type">${opts}</select></label>
+        <label for="d${i}">ลักษณะในภาพ <small>(บรรยายภาษาไทยได้ แก้ไขได้)</small><textarea id="d${i}" data-i="${i}" data-f="d" placeholder="เช่น เจดีย์สีขาว มีต้นโพธิ์ใหญ่ข้าง ๆ">${esc(p.d)}</textarea></label>
+      </div>
+      <div class="photo-row">
+        <label class="upload" for="img${i}">📷 ${p.img?"เปลี่ยนรูปจริง":"เลือกรูปจริง (ถ้ามี)"}<input type="file" accept="image/*" id="img${i}" data-img="${i}"></label>
+        ${p.img?`<img class="thumb" src="${p.img}" alt="รูปของ ${esc(p.th)}"><span class="photo-note">รูปที่ ${order[i]}</span><button type="button" class="del" data-rmimg="${i}">ลบรูป</button>`:`<span class="photo-note">ช่วยให้ AI วาดให้เหมือนของจริง</span>`}
+      </div>
+    </div>`).join("");
+  places.forEach((p,i)=>$("type"+i).value=p.type);
+  $("count").textContent = `${places.length} แห่ง` + (places.length<6?" · แนะนำ 8–10 แห่งให้ภาพเต็ม":"");
+  build();
+}
+
+$("places").addEventListener("input",e=>{
+  const i=e.target.dataset.i,f=e.target.dataset.f; if(i===undefined) return;
+  places[i][f]=e.target.value;
+  if(f==="type"){ places[i].d=TYPES[e.target.value].d; $("d"+i).value=places[i].d; }
+  build();
+});
+$("places").addEventListener("change",e=>{
+  const i=e.target.dataset.img; if(i===undefined) return;
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{places[i].img=r.result; renderPlaces();}; r.readAsDataURL(f);
+});
+$("places").addEventListener("click",e=>{
+  const ds=e.target.dataset, d=ds.del, rm=ds.rmimg;
+  if(ds.up!==undefined||ds.down!==undefined){ const i=+(ds.up??ds.down), j=ds.up!==undefined?i-1:i+1; if(j<0||j>=places.length) return; [places[i],places[j]]=[places[j],places[i]]; renderPlaces(); return; }
+  if(rm!==undefined){ places[rm].img=null; renderPlaces(); return; }
+  if(d===undefined) return;
+  places.splice(+d,1); renderPlaces();
+});
+$("add").addEventListener("click",()=>{
+  if(places.length>=12) return;
+  places.push({th:"",type:"other",d:"",img:null,pos:null}); renderPlaces();
+  $("th"+(places.length-1)).focus();
+});
+document.querySelectorAll(".card input:not([data-i]):not([type=file]),.card select:not([data-i])").forEach(el=>{el.addEventListener("input",build);el.addEventListener("change",build)});
+
+function build(){
+  const v=id=>$(id).value.trim();
+  const area=[v("tambon")&&"ตำบล"+v("tambon"),v("amphoe")&&"อำเภอ"+v("amphoe"),v("province")&&"จังหวัด"+v("province")].filter(Boolean).join(" ");
+  const list=places.filter(p=>p.d.trim()||p.th.trim());
+  const order=photoOrder();
+  const lines=list.map((p,i)=>{
+    const oi=places.indexOf(p);
+    let s=`${i+1}. ${p.th?p.th+" — ":""}${p.d.trim()||"[บรรยายลักษณะสถานที่]"}`;
+    if(p.img) s+=` (ดูรูปแนบที่ ${order[oi]} เป็นต้นแบบ)`;
+    return s;
+  }).join("\n");
+  const hasImg=places.some(p=>p.img);
+  if($("maprow")) renderMap();
+  const lock=$("lock").checked;
+  const ROADS={
+    winding:`มีถนนคดเคี้ยวพร้อมลูกศรเชื่อมทุกสถานที่ทั้ง ${list.length} แห่งตามลำดับหมายเลข`,
+    cross:"โครงถนน: ถนนเส้นตรง 2 เส้นตัดกันเป็นสี่แยกตรงกลางภาพ เส้นหนึ่งวิ่งจากซ้ายไปขวา อีกเส้นวิ่งจากบนลงล่าง แบ่งแผนที่เป็น 4 ส่วน มีไฟจราจรที่สี่แยก",
+    t:"โครงถนน: สามแยกรูปตัว T ถนนเส้นหลักวิ่งจากซ้ายไปขวาผ่านกลางภาพ และมีถนนอีกเส้นแยกขึ้นไปทางด้านบนตรงกลาง",
+    h:"โครงถนน: ถนนเส้นตรงเส้นเดียววิ่งจากซ้ายไปขวาผ่านกลางภาพ แบ่งแผนที่เป็นส่วนบนและส่วนล่าง",
+    v:"โครงถนน: ถนนเส้นตรงเส้นเดียววิ่งจากบนลงล่างผ่านกลางภาพ แบ่งแผนที่เป็นส่วนซ้ายและส่วนขวา",
+    ring:"โครงถนน: ถนนวงแหวนวนรอบแผนที่ มีทางแยกเล็ก ๆ เข้าไปยังแต่ละสถานที่"
+  };
+  let txt=`สร้างภาพแผนที่เส้นทางแหล่งเรียนรู้ของ${area} ${$("region").value} ประเทศไทย
+สไตล์: ${v("style")}
+${lock?"สำคัญมาก: มุมมองจากด้านหน้า เอียงลงเล็กน้อย ห้ามหมุนแผนที่ ด้านบนของภาพคือทิศเหนือ วางตำแหน่งทุกอย่างตามที่ระบุ":"มุมมองจากมุมสูง (bird's-eye view)"} รายละเอียดสูง${$("edge").value?"\n"+$("edge").value:""}
+${ROADS[$("road").value]}${v("roadto")?"\nปลายทางของถนน: "+v("roadto"):""}
+ฉากหลัง: ${v("scenery")}
+
+สถานที่บนแผนที่:
+${lines}
+`;
+  if(v("extras")) txt+=`\nเพิ่ม${v("extras")} ให้ภาพมีชีวิตชีวา`;
+  txt+=`
+${lock?`มีทั้งหมด ${list.length} สถานที่เท่านั้น ห้ามเพิ่มอาคารหรือสถานที่อื่น\n`:""}ห้ามมีตัวอักษร ตัวเลข หรือข้อความใด ๆ ในภาพ (No text, no letters, no numbers)
+${$("format").value}`;
+  if(hasImg) txt+=`\n\nใช้รูปถ่ายที่แนบมาเป็นต้นแบบรูปทรงและสีของสถานที่ แต่วาดให้เป็นสไตล์เดียวกันทั้งภาพ`;
+  if(mapImg) txt+=`\n\n${hasImg?"รูปแนบที่ "+(places.filter(p=>p.img).length+1)+" (รูปสุดท้าย)":"รูปที่แนบมา"}คือแผนที่จริงของพื้นที่ ให้วางตำแหน่งสถานที่และแนวถนนตามแผนที่นี้ทุกจุด (ไม่ต้องวาดตัวอักษรหรือหมุดจากแผนที่)`;
+  $("out").textContent=txt;
+  $("labels").textContent=`หัวเรื่อง: ${v("titleTh")}\n\n`+list.map((p,i)=>`ป้ายที่ ${i+1}: ${p.th||"(ยังไม่ใส่ชื่อ)"}`).join("\n");
+}
+
+function copy(pre,toast){
+  const t=$(pre).textContent;
+  const done=()=>{const el=$(toast);el.hidden=false;setTimeout(()=>el.hidden=true,1800)};
+  const fallback=()=>{const r=document.createRange();r.selectNodeContents($(pre));const s=getSelection();s.removeAllRanges();s.addRange(r);};
+  try{navigator.clipboard.writeText(t).then(done,fallback)}catch(e){fallback()}
+}
+$("copy1").addEventListener("click",()=>copy("out","t1"));
+$("copy2").addEventListener("click",()=>copy("labels","t2"));
+renderPlaces();
+</script>
+</body>
+</html>
